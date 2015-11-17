@@ -355,8 +355,8 @@ int main(int argc, char **argv)
   char *cm = NULL;
 #endif /* ! TM_COMPILER */
   thread_data_t *data;
-  pthread_t *threads;
-  pthread_attr_t attr;
+//  pthread_t *threads;
+//  pthread_attr_t attr;
   barrier_t barrier;
   struct timeval start, end;
   struct timespec timeout;
@@ -486,10 +486,10 @@ int main(int argc, char **argv)
     perror("malloc");
     exit(1);
   }
-  if ((threads = (pthread_t *)malloc(nb_threads * sizeof(pthread_t))) == NULL) {
+  /*if ((threads = (pthread_t *)malloc(nb_threads * sizeof(pthread_t))) == NULL) {
     perror("malloc");
     exit(1);
-  }
+  }*/
 
   if (seed == 0)
     srand((int)time(NULL));
@@ -522,8 +522,8 @@ int main(int argc, char **argv)
 
   /* Access set from all threads */
   barrier_init(&barrier, nb_threads + 1);
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+//  pthread_attr_init(&attr);
+//  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
   for (i = 0; i < nb_threads; i++) {
     printf("Creating thread %d\n", i);
     data[i].id = i;
@@ -554,13 +554,15 @@ int main(int argc, char **argv)
     data[i].seed = rand();
     data[i].bank = bank;
     data[i].barrier = &barrier;
-    if (pthread_create(&threads[i], &attr, test, (void *)(&data[i])) != 0) {
+    //TODO: don't need thread.
+    test(data[0]);
+/*    if (pthread_create(&threads[i], &attr, test, (void *)(&data[i])) != 0) {
       fprintf(stderr, "Error creating thread\n");
       exit(1);
     }
   }
   pthread_attr_destroy(&attr);
-
+*/
   /* Catch some signals */
   if (signal(SIGHUP, catcher) == SIG_ERR ||
       signal(SIGINT, catcher) == SIG_ERR ||
@@ -585,12 +587,12 @@ int main(int argc, char **argv)
   printf("STOPPING...\n");
 
   /* Wait for thread completion */
-  for (i = 0; i < nb_threads; i++) {
+  /*for (i = 0; i < nb_threads; i++) {
     if (pthread_join(threads[i], NULL) != 0) {
       fprintf(stderr, "Error waiting for thread completion\n");
       exit(1);
     }
-  }
+  }*/
 
   duration = (end.tv_sec * 1000 + end.tv_usec / 1000) - (start.tv_sec * 1000 + start.tv_usec / 1000);
 #ifndef TM_COMPILER
@@ -692,7 +694,7 @@ int main(int argc, char **argv)
   /* Cleanup STM */
   TM_EXIT;
 
-  free(threads);
+  //free(threads);
   free(data);
 
   return ret;
