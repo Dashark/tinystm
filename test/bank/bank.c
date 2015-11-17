@@ -555,7 +555,7 @@ int main(int argc, char **argv)
     data[i].bank = bank;
     data[i].barrier = &barrier;
     //TODO: don't need thread.
-    test(data[0]);
+    test(&data[0]);
 /*    if (pthread_create(&threads[i], &attr, test, (void *)(&data[i])) != 0) {
       fprintf(stderr, "Error creating thread\n");
       exit(1);
