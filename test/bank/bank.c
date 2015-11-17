@@ -234,7 +234,7 @@ typedef struct thread_data {
   char padding[64];
 } thread_data_t;
 
-static void *test(void *data)
+static void *test(thread_data_t *data)
 {
   int src, dst, nb;
   int rand_max, rand_min;
@@ -559,10 +559,10 @@ int main(int argc, char **argv)
 /*    if (pthread_create(&threads[i], &attr, test, (void *)(&data[i])) != 0) {
       fprintf(stderr, "Error creating thread\n");
       exit(1);
-    }
+    }*/
   }
-  pthread_attr_destroy(&attr);
-*/
+  //pthread_attr_destroy(&attr);
+  
   /* Catch some signals */
   if (signal(SIGHUP, catcher) == SIG_ERR ||
       signal(SIGINT, catcher) == SIG_ERR ||
