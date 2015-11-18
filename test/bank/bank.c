@@ -262,8 +262,8 @@ static void *test(int dur, thread_data_t *data)
   /* Create transaction */
   TM_INIT_THREAD;
   /* Wait on barrier */
-  barrier_cross(d->barrier);
-  printf("some test");
+  //barrier_cross(d->barrier);
+
   //while (stop == 0) {
   for(i=0;i<dur;i+=1) {
     if (d->id < d->read_threads) {
@@ -522,7 +522,7 @@ int main(int argc, char **argv)
 #endif /* ! TM_COMPILER */
 
   /* Access set from all threads */
-  barrier_init(&barrier, nb_threads + 1);
+  //barrier_init(&barrier, nb_threads + 1);
 //  pthread_attr_init(&attr);
 //  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
   for (i = 0; i < nb_threads; i++) {
@@ -573,7 +573,7 @@ int main(int argc, char **argv)
   }
  
   /* Start threads */
-  barrier_cross(&barrier);
+  //barrier_cross(&barrier);
 
   printf("STARTING...\n");
   gettimeofday(&start, NULL);
