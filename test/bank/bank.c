@@ -525,6 +525,8 @@ int main(int argc, char **argv)
   //barrier_init(&barrier, nb_threads + 1);
 //  pthread_attr_init(&attr);
 //  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+  printf("STARTING...\n");
+  gettimeofday(&start, NULL);
   for (i = 0; i < nb_threads; i++) {
     printf("Creating thread %d\n", i);
     data[i].id = i;
@@ -556,13 +558,15 @@ int main(int argc, char **argv)
     data[i].bank = bank;
     data[i].barrier = &barrier;
     //TODO: don't need thread.
-    test(duration, &data[0]);
+    test(duration, &data[i]);
 /*    if (pthread_create(&threads[i], &attr, test, (void *)(&data[i])) != 0) {
       fprintf(stderr, "Error creating thread\n");
       exit(1);
     }*/
   }
   //pthread_attr_destroy(&attr);
+  gettimeofday(&end, NULL);
+  printf("STOPPING...\n");
   
   /* Catch some signals */
   if (signal(SIGHUP, catcher) == SIG_ERR ||
@@ -575,8 +579,6 @@ int main(int argc, char **argv)
   /* Start threads */
   //barrier_cross(&barrier);
 
-  printf("STARTING...\n");
-  gettimeofday(&start, NULL);
   //no thread no waiting
   /*if (duration > 0) {
     nanosleep(&timeout, NULL);
@@ -585,8 +587,6 @@ int main(int argc, char **argv)
     sigsuspend(&block_set);
   }
   stop = 1;*/
-  gettimeofday(&end, NULL);
-  printf("STOPPING...\n");
 
   /* Wait for thread completion */
   /*for (i = 0; i < nb_threads; i++) {
