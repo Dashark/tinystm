@@ -98,7 +98,7 @@ void perror(const char *s);
  * GLOBALS
  * ################################################################### */
 
-static volatile int stop;
+//static volatile int stop;
 
 /* ################################################################### *
  * BANK ACCOUNTS
@@ -234,9 +234,9 @@ typedef struct thread_data {
   char padding[64];
 } thread_data_t;
 
-static void *test(thread_data_t *data)
+static void *test(int dur, thread_data_t *data)
 {
-  int src, dst, nb;
+  int src, dst, nb, i;
   int rand_max, rand_min;
   thread_data_t *d = (thread_data_t *)data;
   unsigned short seed[3];
@@ -263,8 +263,9 @@ static void *test(thread_data_t *data)
   TM_INIT_THREAD;
   /* Wait on barrier */
   barrier_cross(d->barrier);
-
-  while (stop == 0) {
+  printf("some test");
+  //while (stop == 0) {
+  for(i=0;i<dur;i+=1) {
     if (d->id < d->read_threads) {
       /* Read all */
       total(d->bank, 1);
@@ -359,7 +360,7 @@ int main(int argc, char **argv)
 //  pthread_attr_t attr;
   barrier_t barrier;
   struct timeval start, end;
-  struct timespec timeout;
+  //struct timespec timeout;
   int duration = DEFAULT_DURATION;
   int nb_accounts = DEFAULT_NB_ACCOUNTS;
   int nb_threads = DEFAULT_NB_THREADS;
@@ -369,7 +370,7 @@ int main(int argc, char **argv)
   int write_all = DEFAULT_WRITE_ALL;
   int write_threads = DEFAULT_WRITE_THREADS;
   int disjoint = DEFAULT_DISJOINT;
-  sigset_t block_set;
+  //sigset_t block_set;
 
   while(1) {
     i = 0;
@@ -479,8 +480,8 @@ int main(int argc, char **argv)
          (int)sizeof(void *),
          (int)sizeof(size_t));
 
-  timeout.tv_sec = duration / 1000;
-  timeout.tv_nsec = (duration % 1000) * 1000000;
+  //timeout.tv_sec = duration / 1000;
+  //timeout.tv_nsec = (duration % 1000) * 1000000;
 
   if ((data = (thread_data_t *)malloc(nb_threads * sizeof(thread_data_t))) == NULL) {
     perror("malloc");
@@ -504,7 +505,7 @@ int main(int argc, char **argv)
     bank->accounts[i].balance = 0;
   }
 
-  stop = 0;
+  //stop = 0;
 
   /* Init STM */
   printf("Initializing STM\n");
@@ -555,7 +556,7 @@ int main(int argc, char **argv)
     data[i].bank = bank;
     data[i].barrier = &barrier;
     //TODO: don't need thread.
-    test(&data[0]);
+    test(duration, &data[0]);
 /*    if (pthread_create(&threads[i], &attr, test, (void *)(&data[i])) != 0) {
       fprintf(stderr, "Error creating thread\n");
       exit(1);
@@ -576,13 +577,14 @@ int main(int argc, char **argv)
 
   printf("STARTING...\n");
   gettimeofday(&start, NULL);
-  if (duration > 0) {
+  //no thread no waiting
+  /*if (duration > 0) {
     nanosleep(&timeout, NULL);
   } else {
     sigemptyset(&block_set);
     sigsuspend(&block_set);
   }
-  stop = 1;
+  stop = 1;*/
   gettimeofday(&end, NULL);
   printf("STOPPING...\n");
 
